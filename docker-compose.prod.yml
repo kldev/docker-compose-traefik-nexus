@@ -1,0 +1,25 @@
+version: "3.4"
+services:
+  nexus3:
+    image: sonatype/nexus3:3.18.1
+    volumes:
+      - nexus.data:/nexus-data
+    deploy:
+      placement:
+        constraints:
+        - node.role == manager
+    labels:
+        traefik.enable: 'true'
+        traefik.nexus.port: 8081
+        traefik.nexus.frontend.rule: 'Host: nexus.YOUR_DOMAIN.io'
+        traefik.labdocker.port: 9090    # configure port for hosted docker repository in Nexus
+        traefik.labdocker.frontend.rule: 'Host: docker.YOUR_DOMAIN.io'
+        traefik.docker.network: 'proxy'
+    networks:
+      - proxy
+volumes:
+  nexus.data:
+    external: true
+networks:
+  proxy:
+    external: true
